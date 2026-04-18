@@ -2,12 +2,22 @@
 
 Computer vision utilities for macOS built with Python, OpenCV, PyAudio, and MediaPipe.
 
-This repository currently contains two standalone scripts:
+This repository currently contains one main unified script and two older standalone scripts:
 
+- `auto_detect.py`: unified entry point with motion detection, clap-based app launching, and hand-based mouse control
 - `motion_clap_launcher.py`: detects motion from the webcam, waits for a clap, then launches apps
 - `hand_mouse_control.py`: detects a hand from the webcam and moves the mouse cursor with finger tracking
 
 ## Features
+
+### Unified Auto Detect
+
+- one file with webcam motion detection, microphone clap detection, and hand mouse control
+- launches apps after `motion -> clap`
+- cursor control using index finger
+- left click when the index finger bends
+- right click when index + middle fingertips touch
+- OpenCV preview with status and debug overlays
 
 ### Motion + Clap Launcher
 
@@ -22,7 +32,7 @@ This repository currently contains two standalone scripts:
 
 - hand landmark tracking with MediaPipe
 - cursor control using the index finger
-- pinch gesture for click
+- legacy left-click gesture example
 - live preview window with debug overlay
 - built-in manual test keys:
   - `m` for manual cursor move test
@@ -62,7 +72,21 @@ pip install numpy opencv-python pyaudio mediapipe pyobjc-framework-Quartz
 
 ## Run
 
-### 1. Motion + clap launcher
+### 1. Unified app
+
+```bash
+python auto_detect.py
+```
+
+Behavior:
+
+1. Watches for motion in the webcam feed.
+2. Starts listening for a clap for 5 seconds after motion is detected.
+3. Launches apps if a clap is detected in time.
+4. Tracks one hand and moves the cursor with the index finger.
+5. Uses gestures for left and right mouse click.
+
+### 2. Motion + clap launcher
 
 ```bash
 python motion_clap_launcher.py
@@ -74,7 +98,7 @@ Behavior:
 2. When motion is detected, it starts listening for a clap for 5 seconds.
 3. If a clap is detected in that time window, it launches the configured apps.
 
-### 2. Hand mouse controller
+### 3. Hand mouse controller
 
 ```bash
 python hand_mouse_control.py
@@ -84,11 +108,11 @@ Behavior:
 
 1. Show one hand to the webcam.
 2. Move your index finger to control the cursor.
-3. Pinch thumb + index finger to click.
+3. Use the older standalone hand controls for experiments.
 
 ## macOS permissions
 
-Both scripts may need permission from macOS before they work correctly.
+All scripts may need permission from macOS before they work correctly.
 
 Open:
 
@@ -109,7 +133,7 @@ If you run the script from an IDE, that IDE often needs the permission, not only
 
 ## Tuning
 
-Both scripts keep all main sensitivity values at the top of each file so they are easy to adjust.
+All scripts keep the main sensitivity values at the top of each file so they are easy to adjust.
 
 Useful values to tune:
 
@@ -120,13 +144,16 @@ Useful values to tune:
 - `ACTIVE_FRAME_MARGIN_X`
 - `ACTIVE_FRAME_MARGIN_Y`
 - `CURSOR_SMOOTHING`
-- `PINCH_CLICK_THRESHOLD`
+- `INDEX_BENT_ANGLE_THRESHOLD`
+- `RIGHT_TOUCH_THRESHOLD`
 
 ## Project structure
 
 ```text
 .
+├── auto_detect.py
 ├── hand_mouse_control.py
+├── models/
 ├── motion_clap_launcher.py
 └── README.md
 ```
@@ -138,6 +165,7 @@ Useful values to tune:
 Make sure you are running the script from the same virtual environment where the packages were installed:
 
 ```bash
+.venv/bin/python auto_detect.py
 .venv/bin/python motion_clap_launcher.py
 .venv/bin/python hand_mouse_control.py
 ```
